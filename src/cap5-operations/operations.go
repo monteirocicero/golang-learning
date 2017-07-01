@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
-
+import (
+    "fmt"
+    "time"
+)
 
 type Operation interface {
     Calculate() int
@@ -9,6 +11,18 @@ type Operation interface {
 
 type Sum struct {
     operator1, operator2 int
+}
+
+type Age struct {
+    birthday int
+}
+
+func (i Age) Calculate() int {
+    return time.Now().Year() - i.birthday
+}
+
+func (i Age) String() string {
+    return fmt.Sprintf("Age since %d", i.birthday)
 }
 
 func (s Sum) Calculate() int {
@@ -31,6 +45,16 @@ func (s Subtraction) String() string {
     return fmt.Sprintf("%d - %d", s.operator1, s.operator2)
 }
 
+func accumulator(operations []Operation) int {
+    accumulator := 0
+    for _, op := range operations {
+        value := op.Calculate()
+        fmt.Printf("%v = %d\n", op, value)
+        accumulator += value
+    }
+    return accumulator;
+}
+
 func main() {
     operations := make([]Operation, 4)
     operations[0] = Sum{10, 20}
@@ -38,14 +62,12 @@ func main() {
     operations[2] = Subtraction{10, 50}
     operations[3] = Sum{5, 2}
 
-    accumulator := 0
-    for _, op := range operations {
-        value := op.Calculate()
-        fmt.Printf("%v = %d\n", op, value)
-        accumulator += value
-    }
+    fmt.Println("Calculated value = ", accumulator(operations))
 
-    fmt.Println("Calculated value = ", accumulator)
+    ages := make([]Operation, 3)
+    ages[0] = Age{1969}
+    ages[1] = Age{1977}
+    ages[2] = Age{2001}
 
-    
+    fmt.Println("Calculated ages = ", accumulator(ages))
 }
